@@ -56,7 +56,7 @@ function Dashboard() {
       <ParticleField />
       <ScanReticle />
       <header className="dashboard-header">
-        <h1>BAS Control Validation</h1>
+        <h1>BAS Cloud Validation</h1>
         <p>Local Breach and Attack Simulation control validation dashboard</p>
       </header>
       <OverviewPanel health={health} loading={loading} error={error} />
