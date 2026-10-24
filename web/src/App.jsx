@@ -1,6 +1,7 @@
-import { useEffect, useState } from "react";
-
-const ELASTICSEARCH_ENDPOINT = "/api";
+import { useEffect, useRef, useState } from "react";
+import OverviewPanel from "./components/OverviewPanel";
+import LogViewer from "./components/LogViewer";
+import ArtLauncher from "./components/ArtLauncher";
 
 const LICENSE_TEXT = `MIT License
 
@@ -28,9 +29,23 @@ export default function App() {
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const glowRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${ELASTICSEARCH_ENDPOINT}/_cluster/health`)
+    const handleMouseMove = (event) => {
+      const glow = glowRef.current;
+      if (!glow) {
+        return;
+      }
+      glow.style.background = `radial-gradient(circle at ${event.clientX}px ${event.clientY}px, rgba(0, 212, 255, 0.10), transparent 60%)`;
+    };
+
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
+  }, []);
+
+  useEffect(() => {
+    fetch(`${"/api"}/_cluster/health`)
       .then((response) => {
         if (!response.ok) {
           throw new Error(`Elasticsearch responded with status ${response.status}`);
@@ -50,16 +65,14 @@ export default function App() {
 
   return (
     <main className="dashboard">
+      <div className="cursor-glow" ref={glowRef} aria-hidden="true" />
       <header className="dashboard-header">
         <h1>BAS Control Validation</h1>
         <p>Local Breach and Attack Simulation control validation dashboard</p>
       </header>
-      <section className="status-card">
-        <h2>Elasticsearch Cluster Health</h2>
-        {loading && <p>Checking cluster status...</p>}
-        {error && <p className="error">Unable to reach Elasticsearch: {error}</p>}
-        {health && <pre>{JSON.stringify(health, null, 2)}</pre>}
-      </section>
+      <OverviewPanel health={health} loading={loading} error={error} />
+      <LogViewer />
+      <ArtLauncher />
       <section className="license-card">
         <h2>License</h2>
         <p>MIT License</p>

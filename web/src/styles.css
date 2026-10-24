@@ -2,70 +2,207 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #05070d;
+  color: #e6edf3;
   font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  background: #f4f6f8;
-  color: #1f2933;
+  min-height: 100vh;
 }
 
 .dashboard {
+  position: relative;
   max-width: 960px;
   margin: 0 auto;
-  padding: 2rem 1.5rem;
+  padding: 4rem 1.5rem;
+  z-index: 1;
+}
+
+.dashboard::before {
+  content: "";
+  position: fixed;
+  top: -200px;
+  left: 50%;
+  width: 900px;
+  height: 600px;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.12), transparent 65%);
+  filter: blur(60px);
+  z-index: 0;
+  pointer-events: none;
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 600px;
+  height: 600px;
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.1), transparent 60%);
+  transform: translate(-50%, -50%);
 }
 
 .dashboard-header h1 {
-  font-size: 1.75rem;
+  font-size: 2rem;
   margin-bottom: 0.25rem;
+  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .dashboard-header p {
-  color: #52606d;
+  color: #8b98a9;
   margin-top: 0;
 }
 
-.status-card {
-  background: #fff;
-  border: 1px solid #e4e7eb;
-  border-radius: 8px;
+.overview-card,
+.panel,
+.status-card,
+.license-card {
+  background: rgba(13, 20, 32, 0.85);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 12px;
   padding: 1.5rem;
   margin-top: 1.5rem;
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.08);
 }
 
-.status-card h2 {
+.overview-card h2,
+.panel h2,
+.status-card h2,
+.license-card h2,
+.overview-card h3,
+.overview-health h3 {
   font-size: 1.15rem;
   margin-top: 0;
 }
 
-.status-card pre {
-  background: #f0f4f8;
-  padding: 1rem;
+.overview-status {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #8b98a9;
+}
+
+.status-healthy {
+  background: #22c55e;
+  box-shadow: 0 0 12px rgba(34, 197, 94, 0.8);
+}
+
+.status-unreachable {
+  background: #ef4444;
+  box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);
+}
+
+.status-unknown {
+  background: #f59e0b;
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.8);
+}
+
+.technique-list {
+  list-style: none;
+  padding: 0;
+  margin: 1rem 0 0;
+}
+
+.technique-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.15);
+}
+
+.technique-id {
+  font-family: "Courier New", monospace;
+  color: #00d4ff;
+}
+
+.technique-name {
+  flex: 1;
+}
+
+.technique-state {
+  color: #22c55e;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+}
+
+.log-controls,
+.art-controls {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.log-controls input,
+.art-controls select {
+  background: #0a0f1a;
+  border: 1px solid rgba(0, 212, 255, 0.35);
   border-radius: 6px;
-  overflow-x: auto;
+  color: #e6edf3;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+button {
+  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  border: none;
+  border-radius: 6px;
+  color: #05070d;
+  font-weight: 600;
+  padding: 0.6rem 1.25rem;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.15);
+}
+
+.art-status {
+  margin-top: 1rem;
+  color: #00d4ff;
 }
 
 .error {
-  color: #b42318;
+  color: #ff6b6b;
 }
 
-.license-card {
-  background: #fff;
-  border: 1px solid #e4e7eb;
-  border-radius: 8px;
-  padding: 1.5rem;
-  margin-top: 1.5rem;
-}
-
-.license-card h2 {
-  font-size: 1.15rem;
-  margin-top: 0;
-}
-
+.status-card pre,
 .license-card pre {
-  background: #f0f4f8;
+  background: #0a0f1a;
   padding: 1rem;
   border-radius: 6px;
   overflow-x: auto;
+}
+
+.status-card pre {
+  border: 1px solid rgba(0, 212, 255, 0.2);
+}
+
+.license-card pre {
   white-space: pre-wrap;
+}
+
+@media (max-width: 640px) {
+  .dashboard {
+    padding: 2rem 1rem;
+  }
 }
