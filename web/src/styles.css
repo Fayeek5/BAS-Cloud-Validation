@@ -48,3 +48,24 @@ body {
 .error {
   color: #b42318;
 }
+
+.license-card {
+  background: #fff;
+  border: 1px solid #e4e7eb;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 1.5rem;
+}
+
+.license-card h2 {
+  font-size: 1.15rem;
+  margin-top: 0;
+}
+
+.license-card pre {
+  background: #f0f4f8;
+  padding: 1rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
