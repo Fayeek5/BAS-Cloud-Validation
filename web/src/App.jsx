@@ -1,32 +1,15 @@
 import { useEffect, useRef, useState } from "react";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
+import { AuthProvider } from "./auth";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Login from "./pages/Login";
 import OverviewPanel from "./components/OverviewPanel";
+import TechniqueDetail from "./components/TechniqueDetail";
 import LogViewer from "./components/LogViewer";
 import ArtLauncher from "./components/ArtLauncher";
 import LiveEvents from "./components/LiveEvents";
 
-const LICENSE_TEXT = `MIT License
-
-Copyright (c) 2026 Fayeek5
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.`;
-
-export default function App() {
+function Dashboard() {
   const [health, setHealth] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -72,15 +55,31 @@ export default function App() {
         <p>Local Breach and Attack Simulation control validation dashboard</p>
       </header>
       <OverviewPanel health={health} loading={loading} error={error} />
+      <TechniqueDetail techniqueId="T1059" />
       <LogViewer />
       <ArtLauncher />
       <LiveEvents />
-      <section className="license-card">
-        <h2>License</h2>
-        <p>MIT License</p>
-        <p>Copyright (c) 2026 Fayeek5</p>
-        <pre>{LICENSE_TEXT}</pre>
-      </section>
     </main>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route
+            path="/"
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }

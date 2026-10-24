@@ -57,6 +57,18 @@ services:
     depends_on:
       - elasticsearch
 
+  security-dashboard:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    container_name: security-dashboard
+    ports:
+      - "8080:80"
+    networks:
+      - security-lab-net
+    depends_on:
+      - security-elasticsearch
+
 networks:
   security-lab-net:
     driver: bridge

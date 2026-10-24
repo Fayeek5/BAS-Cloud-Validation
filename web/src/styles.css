@@ -66,8 +66,7 @@ body {
 
 .overview-card,
 .panel,
-.status-card,
-.license-card {
+.status-card {
   background: rgba(13, 20, 32, 0.85);
   border: 1px solid rgba(0, 212, 255, 0.35);
   border-radius: 12px;
@@ -79,7 +78,6 @@ body {
 .overview-card h2,
 .panel h2,
 .status-card h2,
-.license-card h2,
 .overview-card h3,
 .overview-health h3 {
   font-size: 1.15rem;
@@ -204,7 +202,7 @@ button:hover {
 }
 
 .status-card pre,
-.license-card pre {
+.overview-health pre {
   background: #0a0f1a;
   padding: 1rem;
   border-radius: 6px;
@@ -215,8 +213,8 @@ button:hover {
   border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
-.license-card pre {
-  white-space: pre-wrap;
+.overview-health {
+  margin-top: 1rem;
 }
 
 @media (max-width: 640px) {
