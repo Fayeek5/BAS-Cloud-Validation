@@ -114,16 +114,25 @@ Add `-v` only when a full reset of the default network and volumes is required.
 
 ## Cloud Deployment
 
-The dashboard is packaged as a container (multi-stage build with nginx) and can be
-deployed to a containerized cloud host using the included image.
+The cloud deployment version packages the validation stack for containerized
+hosting on a Fly.io application.
+
+- **Elasticsearch** — `docker.elastic.co/elasticsearch/elasticsearch:8.12.0`
+- **Kibana** — `docker.elastic.co/kibana/kibana:8.12.0`
+- **Dashboard** — `web/Dockerfile` (multi-stage build with nginx; proxies `/api`
+  traffic to the Elasticsearch backend)
 
 ```bash
 fly launch --dockerfile web/Dockerfile --name bas-control-validation
 fly deploy
 ```
 
-The container serves the dashboard on port `8080` and proxies `/api` traffic to the
-Elasticsearch backend, keeping a single-origin API surface for the dashboard.
+The dashboard container serves the application on port `80` and proxies `/api`
+traffic to the Elasticsearch backend, keeping a single-origin API surface for the
+dashboard.
+
+The full local stack (Elasticsearch, Kibana, target, dashboard) remains defined in
+`docker-compose.yml` for on-host validation workloads.
 
 
 ## License
