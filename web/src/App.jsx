@@ -10,6 +10,7 @@ import ArtLauncher from "./components/ArtLauncher";
 import LiveEvents from "./components/LiveEvents";
 import ParticleField from "./components/ParticleField";
 import ScanReticle from "./components/ScanReticle";
+import DetectionCoverage from "./components/DetectionCoverage";
 
 function Dashboard() {
   const [health, setHealth] = useState(null);
@@ -59,6 +60,7 @@ function Dashboard() {
         <p>Local Breach and Attack Simulation control validation dashboard</p>
       </header>
       <OverviewPanel health={health} loading={loading} error={error} />
+      <DetectionCoverage />
       <TechniqueDetail techniqueId="T1059" />
       <LogViewer />
       <ArtLauncher />
