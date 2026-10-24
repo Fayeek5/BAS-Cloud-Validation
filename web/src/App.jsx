@@ -1,16 +1,17 @@
-import { useEffect, useRef, useState } from "react";
+import { Suspense, lazy, useEffect, useRef, useState } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./auth";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Login from "./pages/Login";
-import OverviewPanel from "./components/OverviewPanel";
-import TechniqueDetail from "./components/TechniqueDetail";
-import LogViewer from "./components/LogViewer";
-import ArtLauncher from "./components/ArtLauncher";
-import LiveEvents from "./components/LiveEvents";
-import ParticleField from "./components/ParticleField";
-import ScanReticle from "./components/ScanReticle";
-import DetectionCoverage from "./components/DetectionCoverage";
+
+const OverviewPanel = lazy(() => import("./components/OverviewPanel"));
+const DetectionCoverage = lazy(() => import("./components/DetectionCoverage"));
+const TechniqueDetail = lazy(() => import("./components/TechniqueDetail"));
+const LogViewer = lazy(() => import("./components/LogViewer"));
+const ArtLauncher = lazy(() => import("./components/ArtLauncher"));
+const LiveEvents = lazy(() => import("./components/LiveEvents"));
+const ParticleField = lazy(() => import("./components/ParticleField"));
+const ScanReticle = lazy(() => import("./components/ScanReticle"));
 
 function Dashboard() {
   const [health, setHealth] = useState(null);
@@ -60,11 +61,21 @@ function Dashboard() {
         <p>Local Breach and Attack Simulation control validation dashboard</p>
       </header>
       <OverviewPanel health={health} loading={loading} error={error} />
-      <DetectionCoverage />
-      <TechniqueDetail techniqueId="T1059" />
-      <LogViewer />
-      <ArtLauncher />
-      <LiveEvents />
+      <Suspense fallback={<div className="panel-fallback">Loading telemetry…</div>}>
+        <DetectionCoverage />
+      </Suspense>
+      <Suspense fallback={<div className="panel-fallback">Loading technique…</div>}>
+        <TechniqueDetail techniqueId="T1059" />
+      </Suspense>
+      <Suspense fallback={<div className="panel-fallback">Loading logs…</div>}>
+        <LogViewer />
+      </Suspense>
+      <Suspense fallback={<div className="panel-fallback">Loading launcher…</div>}>
+        <ArtLauncher />
+      </Suspense>
+      <Suspense fallback={<div className="panel-fallback">Loading events…</div>}>
+        <LiveEvents />
+      </Suspense>
     </main>
   );
 }

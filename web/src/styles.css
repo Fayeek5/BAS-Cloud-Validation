@@ -223,6 +223,19 @@ button:hover {
   color: #ff6b6b;
 }
 
+.panel-fallback {
+  min-height: 240px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: rgba(148, 197, 255, 0.75);
+  border: 1px dashed rgba(0, 212, 255, 0.25);
+  border-radius: 8px;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
 .status-card pre,
 .overview-health pre {
   background: #0a0f1a;
