@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import OverviewPanel from "./components/OverviewPanel";
 import LogViewer from "./components/LogViewer";
 import ArtLauncher from "./components/ArtLauncher";
+import LiveEvents from "./components/LiveEvents";
 
 const LICENSE_TEXT = `MIT License
 
@@ -73,6 +74,7 @@ export default function App() {
       <OverviewPanel health={health} loading={loading} error={error} />
       <LogViewer />
       <ArtLauncher />
+      <LiveEvents />
       <section className="license-card">
         <h2>License</h2>
         <p>MIT License</p>
