@@ -8,6 +8,8 @@ import TechniqueDetail from "./components/TechniqueDetail";
 import LogViewer from "./components/LogViewer";
 import ArtLauncher from "./components/ArtLauncher";
 import LiveEvents from "./components/LiveEvents";
+import ParticleField from "./components/ParticleField";
+import ScanReticle from "./components/ScanReticle";
 
 function Dashboard() {
   const [health, setHealth] = useState(null);
@@ -50,6 +52,8 @@ function Dashboard() {
   return (
     <main className="dashboard">
       <div className="cursor-glow" ref={glowRef} aria-hidden="true" />
+      <ParticleField />
+      <ScanReticle />
       <header className="dashboard-header">
         <h1>BAS Control Validation</h1>
         <p>Local Breach and Attack Simulation control validation dashboard</p>

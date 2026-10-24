@@ -1,4 +1,5 @@
 import { TECHNIQUES } from "../constants";
+import GlitchText from "./GlitchText";
 
 export default function OverviewPanel({ health, loading, error }) {
   const status = error ? "unreachable" : health && health.status ? health.status : "unknown";
@@ -8,7 +9,7 @@ export default function OverviewPanel({ health, loading, error }) {
       <h2>Overview</h2>
       <div className="overview-status">
         <span className={`status-dot status-${status}`} />
-        <span>Elasticsearch status: {status}</span>
+        <GlitchText text={`Elasticsearch status: ${status}`} />
       </div>
       <h3>Targeted Techniques</h3>
       <ul className="technique-list">
