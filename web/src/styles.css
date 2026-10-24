@@ -217,6 +217,52 @@ button:hover {
   margin-top: 1rem;
 }
 
+.login-page .login-card {
+  background: rgba(13, 20, 32, 0.85);
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 12px;
+  padding: 2rem;
+  margin-top: 2rem;
+  box-shadow: 0 0 24px rgba(0, 212, 255, 0.08);
+}
+
+.login-card h1 {
+  font-size: 1.75rem;
+  background: linear-gradient(90deg, #00d4ff, #7c3aed);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.login-card p {
+  color: #8b98a9;
+}
+
+.login-card form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.login-card label {
+  font-size: 0.85rem;
+  color: #8b98a9;
+}
+
+.login-card input {
+  background: #0a0f1a;
+  border: 1px solid rgba(0, 212, 255, 0.35);
+  border-radius: 6px;
+  color: #e6edf3;
+  padding: 0.6rem 0.75rem;
+  font-size: 0.9rem;
+}
+
+.login-card button {
+  margin-top: 0.5rem;
+}
+
 @media (max-width: 640px) {
   .dashboard {
     padding: 2rem 1rem;
