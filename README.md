@@ -1,113 +1,117 @@
-# CBX Cloud (TradeBeyond) — OI UAT UI Automation
+# Local BAS Control Validation Pipeline
 
-Playwright + TypeScript framework for automated UI testing of CBX Cloud on the
-OI UAT environment (`https://oi-uat.tradebeyond.com`).
+## Overview
 
-The framework is built and ready; the e2e use cases get filled in once they're
-shared. The structure uses the Page Object Model, a one-time login that is
-reused across tests, and environment-based configuration.
+The Local BAS Control Validation Pipeline is a self-contained security
+engineering environment for exercising local Breach and Attack Simulation (BAS)
+checks against an isolated Linux endpoint and verifying that the expected
+telemetry reaches the security monitoring layer.
+
+The environment is built around three components:
+
+- **Elasticsearch 8.12.0** - single-node log storage engine, sized for local
+  resource consumption (`ES_JAVA_OPTS=-Xms512m -Xmx512m`, security hardened off
+  for lab use).
+- **Kibana 8.12.0** - visualization and search front end, bound natively to the
+  local Elasticsearch endpoint and published on port `5601`.
+- **security-target-endpoint** - Ubuntu 22.04 container that acts as the
+  simulated adversary host, running the Linux Audit Framework and the Atomic
+  Red Team execution engine.
+
+All containers are attached to the software-defined `security-lab-net` bridge
+network, keeping the simulated activity isolated from the host and from other
+local containers.
+
+## Architecture
+
+```
++-----------------------+       +----------------------+       +---------------------------+
+|   security-elasticsearch |<------>|      security-kibana      |<------| security-target-endpoint   |
+|        (single node)    |       |         (port 5601)      |       |        (Ubuntu 22.04)       |
++-----------------------+       +----------------------+       +---------------------------+
+                                                                     |
+                                                          auditd / audispd
+                                                          Invoke-AtomicRedTeam
+```
+
+1. The target endpoint writes audit records through the Linux Audit Framework.
+2. The audit records are made available to the SIEM backend.
+3. Analysts review the records in Kibana Discover using KQL queries documented
+   in the validation playbook.
+
+## Repository Layout
+
+```
+.
+├── docker-compose.yml            # Local SIEM and simulation target stack
+├── setup-target-logging.sh       # Audit framework baseline for the target
+├── install-simulation-engine.sh  # PowerShell and Atomic Red Team setup
+├── README.md
+└── VALIDATION_PLAYBOOK.md
+```
 
 ## Prerequisites
 
-- Node.js 18+ (built/tested on Node 22)
-- Network access to the OI UAT environment from the machine running the tests
+- Docker Engine 24.x or later
+- Docker Compose v2 (`docker compose`)
+- Outbound network access from the host for container image pulls and package
+  downloads
 
-## Setup
+## Installation
 
-```bash
-# 1. Install dependencies
-npm install
-
-# 2. Install Playwright browsers
-npm run install:browsers
-
-# 3. Configure credentials + base URL
-cp .env.example .env
-#   then edit .env and set CBX_USERNAME / CBX_PASSWORD
-```
-
-## Running
+Start the full stack:
 
 ```bash
-# Connectivity smoke tests — no login needed. Run this FIRST to confirm
-# the UAT env is reachable and the base URL is correct.
-npm run test:smoke
-
-# Full authenticated e2e suite (logs in once, then runs the use cases)
-npm run test:e2e
-
-# Everything
-npm test
-
-# Useful modes
-npm run test:headed   # watch the browser
-npm run test:ui       # Playwright's interactive UI runner
-npm run test:debug    # step-through debugging
-npm run report        # open the last HTML report
+docker compose up -d
 ```
 
-## Capturing real selectors
+Wait for the Elasticsearch cluster health check to pass before continuing.
 
-The login/dashboard selectors are best-guess placeholders marked with `TODO`
-in `pages/`. Confirm them against the live site using Playwright's recorder,
-which writes resilient locators for you:
+### Configure the audit target
+
+Copy the logging setup script into the running target container and execute it:
 
 ```bash
-npm run codegen
+docker cp setup-target-logging.sh security-target-endpoint:/tmp/setup-target-logging.sh
+docker exec -it security-target-endpoint bash /tmp/setup-target-logging.sh
 ```
 
-Paste the captured locators into the relevant Page Object.
+### Install the simulation engine
 
-## Project structure
+Copy the simulation engine installer into the running target container and
+execute it:
 
-```
-cbx-playwright/
-├── playwright.config.ts      # Config: base URL, projects, reporters, retries
-├── tsconfig.json             # TypeScript + path aliases (@pages, @utils, ...)
-├── .env.example              # Copy to .env and fill in credentials
-│
-├── tests/
-│   ├── auth.setup.ts         # Logs in once, saves session for reuse
-│   ├── smoke/                # No-auth reachability checks
-│   │   └── connectivity.spec.ts
-│   └── e2e/                  # Authenticated use cases (your tests go here)
-│       └── example.spec.ts
-│
-├── pages/                    # Page Object Model
-│   ├── BasePage.ts
-│   ├── LoginPage.ts          # TODO: confirm selectors
-│   └── DashboardPage.ts      # TODO: confirm "logged-in" signal
-│
-├── fixtures/
-│   └── test-fixtures.ts      # Exposes page objects to tests
-│
-├── utils/
-│   └── config.ts             # Typed env access with fail-fast validation
-│
-└── data/
-    └── test-data.json        # Externalized test data
+```bash
+docker cp install-simulation-engine.sh security-target-endpoint:/tmp/install-simulation-engine.sh
+docker exec -it security-target-endpoint bash /tmp/install-simulation-engine.sh
 ```
 
-## How login is handled
+## Validation Workflow
 
-`tests/auth.setup.ts` runs once before the e2e suite, logs in with the `.env`
-credentials, and saves the authenticated browser state to
-`fixtures/.auth/user.json`. The `chromium` project loads that state, so every
-e2e test starts already logged in — no repeated login UI, much faster, less
-flaky. (The `smoke` project deliberately skips this so you can test
-connectivity before credentials are set up.)
+1. Start the stack with `docker compose up -d`.
+2. Configure the audit baseline on the target.
+3. Install the simulation engine on the target.
+4. Execute the scenario documented in `VALIDATION_PLAYBOOK.md` through
+   `docker exec` against the `security-target-endpoint` container.
+5. Confirm the expected records appear in Kibana Discover and correlate against
+   the configured audit keys.
 
-## Adding your use cases
+## Resource Footprint
 
-Each use case becomes a `test(...)` (or a `test.describe(...)` group) under
-`tests/e2e/`, driving Page Objects in `pages/`. Add a new Page Object per
-screen/module, expose it in `fixtures/test-fixtures.ts` if you want it injected
-automatically, and keep data in `data/`. Send the use cases over and they'll be
-wired in following this pattern.
+The local deployment is intentionally constrained:
 
-## CI
+- Elasticsearch heap is capped at 512 MB.
+- The cluster runs as a single node.
+- Security features are disabled because the lab does not process real data.
 
-A sample GitHub Actions workflow is in `.github/workflows/playwright.yml`.
-JUnit results are written to `test-results/junit.xml` and the HTML report to
-`playwright-report/`. Provide `CBX_USERNAME` / `CBX_PASSWORD` (and `BASE_URL`
-if different) as CI secrets, and ensure the runner can reach the UAT network.
+## Teardown
+
+```bash
+docker compose down
+```
+
+Add `-v` only when a full reset of the default network and volumes is required.
+
+## License
+
+This repository is released for defensive security validation and research use.

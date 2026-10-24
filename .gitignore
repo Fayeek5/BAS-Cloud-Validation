@@ -1,6 +1,55 @@
+# Operating system generated noise
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+ehthumbs.db
+
+# Editor and IDE state
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Node package manager noise
 node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Local environment files and secrets
+.env
+.env.*
+!.env.example
+
+# Docker local state, container logs, and bind volumes
+docker-compose.override.yml
+*.log
+logs/
+data/
+volumes/
+
+# Test execution output
 playwright-report/
 test-results/
-.env
-fixtures/.auth/
-latest-regression.log
+blob-report/
+
+# Archives and binary artifacts
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Scratch and temporary files
+*.bak
+*.orig
+*.tmp
